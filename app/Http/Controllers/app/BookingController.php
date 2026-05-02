@@ -12,11 +12,15 @@ class BookingController extends Controller
     function index()
     {
         $lapangan = Lapangan::all();
+
         return Inertia::render('App/Booking', compact('lapangan'));
     }
 
-    function detail()
+    function detail(Request $request, $id)
     {
-        return Inertia::render('App/Detail');
+
+        $lapangan = Lapangan::where('id', $id)->first();
+        $lainya = Lapangan::where('id', '!=', $id)->get();
+        return Inertia::render('App/Detail', compact('lapangan', 'lainya'));
     }
 }

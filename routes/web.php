@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\admin\HomeController;
 use App\Http\Controllers\app\BookingController;
+use App\Http\Controllers\app\JammainController;
+use App\Http\Controllers\app\PembayaranController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -29,7 +31,12 @@ Route::middleware('auth')->group(function () {
 
 Route::get('home', [HomeController::class, 'index'])->name('home');
 Route::get('/booking', [BookingController::class, 'index'])->name('booking');
-Route::get('/booking/{id}', [BookingController::class, 'detail'])->name('formbooking');
+Route::get('/booking/{id}', [BookingController::class, 'detail'])->name('detail');
+Route::get('/jammain/{id}', [JammainController::class, 'index'])->name('Jammain');
+Route::get('/jambooking/{idlap}/{tanggal}', [JammainController::class, 'jambooking'])->name('jambooking');
+
+Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran');
+
 
 
 require __DIR__ . '/auth.php';

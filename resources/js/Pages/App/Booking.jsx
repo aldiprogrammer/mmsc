@@ -1,6 +1,7 @@
+import { Link } from '@inertiajs/react';
 import React, { useRef, useState } from 'react'
 
-export default function Booking() {
+export default function Booking({ lapangan }) {
     const [scrolled, setScrolled] = useState(false);
     const scrollRef = useRef(null);
     return (
@@ -32,83 +33,37 @@ export default function Booking() {
                         </div>
 
                         <div className='grid grid-cols-2 mt-3 gap-3'>
-                            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border">
-                                <div className="relative">
-                                    <img
-                                        src="https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a"
-                                        className="w-full h-40 object-cover"
-                                    />
 
-                                    <div className="absolute top-3 left-3 bg-gray-600 text-white text-xs px-3 py-1 rounded-full">
-                                        <i className='fa fa-user'></i> 7 x 7
+                            {lapangan.map((item, index) => (
+                                <Link href={'/booking/' + item.id}>
+                                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border">
+                                        <div className="relative">
+                                            <img
+                                                src={item.gambar}
+                                                className="w-full h-40 object-cover"
+                                            />
+
+                                            <div className="absolute top-3 left-3 bg-gray-600 text-white text-xs px-3 py-1 rounded-full">
+                                                <i className='fa fa-user'></i> 7 x 7
+                                            </div>
+                                        </div>
+
+                                        <div className="p-4">
+
+                                            <div className="flex items-center justify-between">
+                                                <h2 className="font-bold text-lg">{item.lapangan}</h2>
+
+                                            </div>
+
+                                            <p className="text-gray-500 text-sm mt-1">
+                                                Rumput sintetis • Lampu malam • Parkir luas
+                                            </p>
+
+                                        </div>
                                     </div>
-                                </div>
+                                </Link>
+                            ))}
 
-                                <div className="p-4">
-
-                                    <div className="flex items-center justify-between">
-                                        <h2 className="font-bold text-lg">Lapangan BD</h2>
-
-                                    </div>
-
-                                    <p className="text-gray-500 text-sm mt-1">
-                                        Rumput sintetis • Lampu malam • Parkir luas
-                                    </p>
-
-                                </div>
-                            </div>
-
-                            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border">
-                                <div className="relative">
-                                    <img
-                                        src="https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a"
-                                        className="w-full h-40 object-cover"
-                                    />
-
-                                    <div className="absolute top-3 left-3 bg-gray-600 text-white text-xs px-3 py-1 rounded-full">
-                                        <i className='fa fa-user'></i> 7 x 7
-                                    </div>
-                                </div>
-
-                                <div className="p-4">
-
-                                    <div className="flex items-center justify-between">
-                                        <h2 className="font-bold text-lg">Lapangan RT</h2>
-
-                                    </div>
-
-                                    <p className="text-gray-500 text-sm mt-1">
-                                        Rumput sintetis • Lampu malam • Parkir luas
-                                    </p>
-
-                                </div>
-                            </div>
-
-                            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border">
-                                <div className="relative">
-                                    <img
-                                        src="https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a"
-                                        className="w-full h-40 object-cover"
-                                    />
-
-                                    <div className="absolute top-3 left-3 bg-gray-600 text-white text-xs px-3 py-1 rounded-full">
-                                        <i className='fa fa-user'></i> 9 x 9
-                                    </div>
-                                </div>
-
-                                <div className="p-4">
-
-                                    <div className="flex items-center justify-between">
-                                        <h2 className="font-bold text-lg">Lapangan WR</h2>
-
-                                    </div>
-
-                                    <p className="text-gray-500 text-sm mt-1">
-                                        Rumput sintetis • Lampu malam • Parkir luas
-                                    </p>
-
-                                </div>
-                            </div>
                         </div>
                     </div>
 
