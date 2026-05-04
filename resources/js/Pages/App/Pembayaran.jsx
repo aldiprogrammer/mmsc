@@ -101,7 +101,7 @@ export default function Pembayaran() {
                     <div
                         className="relative h-44 bg-cover bg-center rounded-b-xl"
                         style={{
-                            backgroundImage: "url('img/bgpembayaran.png')",
+                            backgroundImage: "url('../img/bgpembayaran.png')",
                         }}
                     >
                         {/* Overlay */}

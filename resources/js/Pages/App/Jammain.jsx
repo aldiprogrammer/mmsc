@@ -37,7 +37,6 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
                 setTotalHarga((prevTotal) => prevTotal + Number(harga));
                 updated = [...prev, value];
             }
-
             console.log(updated); // ✅ Data terbaru
             return updated;
         });
@@ -231,7 +230,7 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
 
                             <div className='font-bold text-lg text-blue-900'>Rp {totalHarga.toLocaleString('id-ID')}</div>
                         </div>
-                        <Link href='/pembayaran'>
+                        <Link href={'/pembayaran/' + lapangan.id}>
                             <button
                                 disabled={selected.length === 0}
                                 className={`w-full py-4 rounded-2xl font-bold
