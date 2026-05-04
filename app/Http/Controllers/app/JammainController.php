@@ -39,4 +39,17 @@ class JammainController extends Controller
         $jambooking = Jammbooking::where('lapangan', $idlap)->where('status', 1)->where('hari', $datahari)->get();
         return response()->json($jambooking);
     }
+
+
+    function getjammain(Request $request)
+    {
+        $jamIds = $request->ids;
+        if (!is_array($jamIds)) {
+            $jamIds = explode(',', $jamIds);
+        }
+        $jamIds = array_map('trim', $jamIds); // buang spasi
+        $jamIds = array_filter($jamIds); // buang kosong
+        $jammain = Jammbooking::whereIn('id', $jamIds)->get();
+        return response()->json($jammain);
+    }
 }

@@ -1,20 +1,58 @@
+import { router, useForm } from '@inertiajs/react'
+import axios from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
 
 export default function Pembayaran() {
     const [scrolled, setScrolled] = useState(false)
     const [preview, setPreview] = useState(null)
-    const [formData, setFormData] = useState({
-        namaTeam: '',
+    const [listjam, Setlistjam] = useState([]);
+    const { data, setData, post, put, delete: destroy, reset, processing
+    } = useForm({
+        nama_team: '',
         whatsapp: '',
-        namaRekening: '',
+        nama_rekening: '',
         bank: '',
-        pembayaran: '',
+        sistem_pembayaran: '',
         bukti: null,
     })
-
     const scrollRef = useRef(null)
+    const jam = localStorage.getItem('selectedJam');
+
+    const handlejam = async () => {
+
+        try {
+            const response = await axios.get('/getjammain?ids=' + jam);
+            console.log(response.data);
+            Setlistjam(response.data);
+        } catch (error) {
+
+        }
+
+    }
+
+    const handleChange = (e) => {
+        setData(e.target.name, e.target.value);
+    }
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0]
+        if (file) {
+            setData('bukti', file);
+            setPreview(URL.createObjectURL(file))
+        }
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        post('/pembayaran', {
+            onSuccess: () => {
+                reset();
+            }
+        })
+    }
 
     useEffect(() => {
+        handlejam();
         const handleScroll = () => {
             if (scrollRef.current) {
                 setScrolled(scrollRef.current.scrollTop > 20)
@@ -32,31 +70,6 @@ export default function Pembayaran() {
             }
         }
     }, [])
-
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData({
-            ...formData,
-            [name]: value,
-        })
-    }
-
-    const handleFileChange = (e) => {
-        const file = e.target.files[0]
-        if (file) {
-            setFormData({
-                ...formData,
-                bukti: file,
-            })
-            setPreview(URL.createObjectURL(file))
-        }
-    }
-
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        console.log(formData)
-        alert('Pembayaran berhasil dikirim!')
-    }
 
     return (
         <>
@@ -100,7 +113,27 @@ export default function Pembayaran() {
 
                     {/* FORM */}
                     <div className="p-4">
+
+
                         <div className="bg-white rounded-3xl shadow-lg p-5 -mt-20 relative z-10 border">
+                            <div className='flex justify-between'>
+                                <div>
+                                    <div className='text-xs font-semibold text-gray-500'>Jam main</div>
+                                    <div className='text-xs mt-1 font-bold text-blue-950'>
+                                        {listjam.map((item, index) => (
+                                            <>
+                                                {item.jam_mulai}-{item.jam_berakhir} {' '}
+                                            </>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className='text-xs font-semibold text-gray-500'> Total Harga</div>
+                                    <div className='font-bold text-blue-950'>Rp {Number(localStorage.getItem('totalHarga')).toLocaleString('id-ID')}</div>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-dashed border-gray-400 my-5"></div>
                             <form onSubmit={handleSubmit} className="space-y-4">
 
                                 {/* Nama Team */}
@@ -110,8 +143,8 @@ export default function Pembayaran() {
                                     </label>
                                     <input
                                         type="text"
-                                        name="namaTeam"
-                                        value={formData.namaTeam}
+                                        name="nama_team"
+                                        value={data.nama_team}
                                         onChange={handleChange}
                                         placeholder="Masukan nama team"
                                         className="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -127,7 +160,7 @@ export default function Pembayaran() {
                                     <input
                                         type="number"
                                         name="whatsapp"
-                                        value={formData.whatsapp}
+                                        value={data.whatsapp}
                                         onChange={handleChange}
                                         placeholder="08xxxxxxxxxx"
                                         className="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -142,8 +175,8 @@ export default function Pembayaran() {
                                     </label>
                                     <input
                                         type="text"
-                                        name="namaRekening"
-                                        value={formData.namaRekening}
+                                        name="nama_rekening"
+                                        value={data.nama_rekening}
                                         onChange={handleChange}
                                         placeholder="Nama pemilik rekening"
                                         className="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -158,7 +191,7 @@ export default function Pembayaran() {
                                     </label>
                                     <select
                                         name="bank"
-                                        value={formData.bank}
+                                        value={data.bank}
                                         onChange={handleChange}
                                         className="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         required
@@ -179,14 +212,14 @@ export default function Pembayaran() {
                                     </label>
                                     <div className="grid grid-cols-2 gap-3">
                                         <label
-                                            className={`border rounded-2xl p-3 text-center cursor-pointer font-semibold ${formData.pembayaran === 'Lunas'
+                                            className={`border rounded-2xl p-3 text-center cursor-pointer font-semibold ${data.sistem_pembayaran === 'Lunas'
                                                 ? 'bg-blue-950 text-white border-blue-700'
                                                 : 'bg-white'
                                                 }`}
                                         >
                                             <input
                                                 type="radio"
-                                                name="pembayaran"
+                                                name="sistem_pembayaran"
                                                 value="Lunas"
                                                 className="hidden"
                                                 onChange={handleChange}
@@ -195,14 +228,14 @@ export default function Pembayaran() {
                                         </label>
 
                                         <label
-                                            className={`border rounded-2xl p-3 text-center cursor-pointer font-semibold ${formData.pembayaran === 'DP 50%'
+                                            className={`border rounded-2xl p-3 text-center cursor-pointer font-semibold ${data.sistem_pembayaran === 'DP 50%'
                                                 ? 'bg-orange-500 text-white border-orange-500'
                                                 : 'bg-white'
                                                 }`}
                                         >
                                             <input
                                                 type="radio"
-                                                name="pembayaran"
+                                                name="sistem_pembayaran"
                                                 value="DP 50%"
                                                 className="hidden"
                                                 onChange={handleChange}

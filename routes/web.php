@@ -29,13 +29,16 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('home', [HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/booking', [BookingController::class, 'index'])->name('booking');
 Route::get('/booking/{id}', [BookingController::class, 'detail'])->name('detail');
 Route::get('/jammain/{id}', [JammainController::class, 'index'])->name('Jammain');
+Route::get('/getjammain', [JammainController::class, 'getjammain'])->name('getjammain');
 Route::get('/jambooking/{idlap}/{tanggal}', [JammainController::class, 'jambooking'])->name('jambooking');
 
 Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran');
+Route::post('/pembayaran', [PembayaranController::class, 'store'])->name('store.pembayaran');
+
 
 
 

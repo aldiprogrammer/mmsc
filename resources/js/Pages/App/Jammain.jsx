@@ -28,17 +28,18 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
 
     const toggle = (value, harga) => {
         setSelected((prev) => {
+            let updated;
+
             if (prev.includes(value)) {
-                // ❌ REMOVE
                 setTotalHarga((prevTotal) => prevTotal - Number(harga));
-
-                return prev.filter((item) => item !== value);
+                updated = prev.filter((item) => item !== value);
             } else {
-                // ➕ ADD
                 setTotalHarga((prevTotal) => prevTotal + Number(harga));
-
-                return [...prev, value];
+                updated = [...prev, value];
             }
+
+            console.log(updated); // ✅ Data terbaru
+            return updated;
         });
     };
 
@@ -91,6 +92,15 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
 
     // AUTO SLIDER
     useEffect(() => {
+
+        const savedSelected = JSON.parse(localStorage.getItem("selectedJam")) || [];
+        const savedTotal = JSON.parse(localStorage.getItem("totalHarga")) || 0;
+        const savedServices = JSON.parse(localStorage.getItem("services")) || {};
+
+        setSelected(savedSelected);
+        setTotalHarga(savedTotal);
+        setServices(savedServices);
+
         setJam(jambooking)
         const interval = setInterval(() => {
             setCurrent((prev) => (prev + 1) % banners.length);
@@ -98,6 +108,13 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
 
         return () => clearInterval(interval);
     }, []);
+
+    // Simpan otomatis setiap selected / total / layanan berubah
+    useEffect(() => {
+        localStorage.setItem("selectedJam", JSON.stringify(selected));
+        localStorage.setItem("totalHarga", JSON.stringify(totalHarga));
+        localStorage.setItem("services", JSON.stringify(services));
+    }, [selected, totalHarga, services]);
 
     return (
         <div className="bg-gray-200 md:flex md:items-center md:justify-center md:min-h-screen">
@@ -214,17 +231,18 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
 
                             <div className='font-bold text-lg text-blue-900'>Rp {totalHarga.toLocaleString('id-ID')}</div>
                         </div>
-
-                        <button
-                            disabled={selected.length === 0}
-                            className={`w-full py-4 rounded-2xl font-bold
+                        <Link href='/pembayaran'>
+                            <button
+                                disabled={selected.length === 0}
+                                className={`w-full py-4 rounded-2xl font-bold
                             ${selected.length > 0
-                                    ? "bg-blue-900 text-white"
-                                    : "bg-gray-300 text-gray-500"
-                                }`}
-                        >
-                            <i className='fas f-money'></i> Pembayaran
-                        </button>
+                                        ? "bg-blue-900 text-white"
+                                        : "bg-gray-300 text-gray-500"
+                                    }`}
+                            >
+                                <i className='fas f-money'></i> Pembayaran
+                            </button>
+                        </Link>
 
                     </div>
                 </div>
