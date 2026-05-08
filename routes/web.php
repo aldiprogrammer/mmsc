@@ -42,6 +42,8 @@ Route::get('/pembayaran/{idlap}', [PembayaranController::class, 'index'])->name(
 Route::post('/pembayaran', [PembayaranController::class, 'store'])->name('store.pembayaran');
 Route::get('/sukses', [SuksesController::class, 'index'])->name('sukses');
 Route::get('/databooking', [DataBookingController::class, 'index'])->name('databooking');
+Route::get('/databooking/{tgl}', [DataBookingController::class, 'caritanggal'])->name('caritanggaldatabooking');
+
 
 
 
