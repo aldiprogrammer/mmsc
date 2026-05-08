@@ -7,4 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     protected $table = 'tbl_booking';
+    public $timestamps = false;
 }

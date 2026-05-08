@@ -89,9 +89,48 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
         }
     }
 
+    const getFoto = async () => {
+        try {
+            const response = await axios.get('/fotograper');
+            console.log(response.data);
+        } catch (error) {
+
+        }
+    }
+
+    const getRompi = async () => {
+        try {
+            const response = await axios.get('/rompi');
+            console.log(response.data);
+        } catch (error) {
+
+        }
+    }
+
+    const getBola = async () => {
+        try {
+            const response = await axios.get('/bola');
+            console.log(response.data);
+        } catch (error) {
+
+        }
+    }
+
+    const getWasit = async () => {
+        try {
+            const response = await axios.get('/wasit');
+            console.log(response.data);
+        } catch (error) {
+
+        }
+    }
+
     // AUTO SLIDER
     useEffect(() => {
-
+        getBola();
+        getRompi();
+        getWasit();
+        getFoto();
         const savedSelected = JSON.parse(localStorage.getItem("selectedJam")) || [];
         const savedTotal = JSON.parse(localStorage.getItem("totalHarga")) || 0;
         const savedServices = JSON.parse(localStorage.getItem("services")) || {};
@@ -165,9 +204,9 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
 
                         <div className="grid grid-cols-3 gap-3">
                             {[
-                                { label: "Fotografer", value: "fotografer", icon: "fa-camera" },
-                                { label: "Sewa Rompi", value: "rompi", icon: "fa-shirt" },
-                                { label: "Sewa Bola", value: "bola", icon: "fa-futbol" },
+                                { label: "Fotografer", value: "Fotografer", icon: "fa-camera" },
+                                { label: "Sewa Rompi", value: "Rompi", icon: "fa-shirt" },
+                                { label: "Sewa Bola", value: "Bola", icon: "fa-futbol" },
                             ].map((item, index) => (
                                 <button
                                     key={index}

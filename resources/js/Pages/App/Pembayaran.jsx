@@ -2,10 +2,13 @@ import { router, useForm } from '@inertiajs/react'
 import axios from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
 
-export default function Pembayaran() {
+export default function Pembayaran({ idlap }) {
     const [scrolled, setScrolled] = useState(false)
+    const scrollRef = useRef(null)
     const [preview, setPreview] = useState(null)
     const [listjam, Setlistjam] = useState([]);
+    const jam = localStorage.getItem('selectedJam');
+
     const { data, setData, post, put, delete: destroy, reset, processing
     } = useForm({
         nama_team: '',
@@ -13,10 +16,12 @@ export default function Pembayaran() {
         nama_rekening: '',
         bank: '',
         sistem_pembayaran: '',
+        lapangan: idlap,
+        jammain: jam,
         bukti: null,
+        total_harga: localStorage.getItem('totalHarga'),
     })
-    const scrollRef = useRef(null)
-    const jam = localStorage.getItem('selectedJam');
+
 
     const handlejam = async () => {
 
@@ -27,7 +32,6 @@ export default function Pembayaran() {
         } catch (error) {
 
         }
-
     }
 
     const handleChange = (e) => {
@@ -114,16 +118,15 @@ export default function Pembayaran() {
                     {/* FORM */}
                     <div className="p-4">
 
-
                         <div className="bg-white rounded-3xl shadow-lg p-5 -mt-20 relative z-10 border">
                             <div className='flex justify-between'>
                                 <div>
                                     <div className='text-xs font-semibold text-gray-500'>Jam main</div>
                                     <div className='text-xs mt-1 font-bold text-blue-950'>
                                         {listjam.map((item, index) => (
-                                            <>
+                                            <div>
                                                 {item.jam_mulai}-{item.jam_berakhir} {' '}
-                                            </>
+                                            </div>
                                         ))}
                                     </div>
                                 </div>

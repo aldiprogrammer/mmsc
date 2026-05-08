@@ -49,8 +49,10 @@ export default function Home() {
 
                             <div className="grid grid-cols-4 text-center mt-4">
                                 <div>
-                                    <i className="text-blue-300 text-xl fas fa-calendar-days"></i>
-                                    <div className="text-xs text-gray-400">Booking</div>
+                                    <Link href='/booking'>
+                                        <i className="text-blue-300 text-xl fas fa-calendar-days"></i>
+                                        <div className="text-xs text-gray-400">Booking</div>
+                                    </Link>
                                 </div>
 
                                 <div>

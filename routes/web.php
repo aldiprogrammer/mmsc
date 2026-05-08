@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\admin\HomeController;
 use App\Http\Controllers\app\BookingController;
+use App\Http\Controllers\app\DataBookingController;
 use App\Http\Controllers\app\JammainController;
 use App\Http\Controllers\app\PembayaranController;
+use App\Http\Controllers\app\SuksesController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -38,6 +40,20 @@ Route::get('/jambooking/{idlap}/{tanggal}', [JammainController::class, 'jambooki
 
 Route::get('/pembayaran/{idlap}', [PembayaranController::class, 'index'])->name('pembayaran');
 Route::post('/pembayaran', [PembayaranController::class, 'store'])->name('store.pembayaran');
+Route::get('/sukses', [SuksesController::class, 'index'])->name('sukses');
+Route::get('/databooking', [DataBookingController::class, 'index'])->name('databooking');
+
+
+
+Route::get('/bola', [JammainController::class, 'bola'])->name('bola');
+Route::get('/rompi', [JammainController::class, 'rompi'])->name('rompi');
+Route::get('/fotograper', [JammainController::class, 'fotograper'])->name('rompi');
+Route::get('/wasit', [JammainController::class, 'wasit'])->name('wasit');
+
+
+
+
+
 
 
 
