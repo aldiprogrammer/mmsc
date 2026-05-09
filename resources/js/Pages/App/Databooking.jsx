@@ -79,7 +79,8 @@ export default function Databooking({ booking }) {
 
                         {data.length == 0 ?
                             <>
-                                <div className='h-screen flex justify-center items-center'>
+                                <div className='h-screen flex  flex-col justify-center items-center'>
+                                    <div className='text-xl text-gray-400'><i className='fas fa-database'></i></div>
                                     <div className='text-xs text-gray-400'>Data booking tidak tersedia</div>
                                 </div>
                             </>
