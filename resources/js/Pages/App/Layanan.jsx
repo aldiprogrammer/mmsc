@@ -17,6 +17,13 @@ export default function Layanan({ tgl }) {
     const [idlap, setIdlap] = useState(0);
     const [totalharga, setTotalharga] = useState(0);
     const [datastorage, setDatastorage] = useState([]);
+    const [datafoto, setDatafoto] = useState([]);
+    const [datarompi, setDatarompi] = useState([]);
+    const [databola, setDatabola] = useState([]);
+    const [datawasit, setDatawasit] = useState([]);
+
+
+
 
 
     const getJam = async () => {
@@ -92,6 +99,17 @@ export default function Layanan({ tgl }) {
 
 
                 if (layanan == 'foto') {
+                    setDatafoto((prev => {
+                        if (prev.includes(idlayanan)) {
+                            return prev.filter(item => item !== idlayanan)
+                        } else {
+                            return [...prev, idlayanan]
+                        }
+                    }))
+
+                    console.log(datafoto);
+
+
                     // kalau sudah ada → hapus
                     if (item.foto == idlayanan) {
                         return {
@@ -160,14 +178,33 @@ export default function Layanan({ tgl }) {
             return item;
         })
         localStorage.setItem("selectJam", JSON.stringify(update));
+
+        const key = JSON.parse(localStorage.getItem("selectJam")) || [];
+        const total = key.reduce((sum, item) => {
+            return sum + Number(item.hargalap || 0) +
+                Number(item.hargafoto || 0) +
+                Number(item.hargabola || 0) +
+                Number(item.hargarompi || 0) +
+                Number(item.hargawasit || 0);
+        }, 0);
+
+        setTotalharga(total);
+
     }
 
     useEffect(() => {
         const data = JSON.parse(localStorage.getItem("selectJam")) || [];
         const total = data.reduce((sum, item) => {
-            return sum + Number(item.hargalap || 0);
+            return sum + Number(item.hargalap || 0) +
+                Number(item.hargafoto || 0) +
+                Number(item.hargabola || 0) +
+                Number(item.hargarompi || 0) +
+                Number(item.hargawasit || 0);
         }, 0);
+
         setTotalharga(total);
+
+
         getJam();
         getWasit();
         getBola();
@@ -258,7 +295,7 @@ export default function Layanan({ tgl }) {
                                                 {ft.nama} - {Number(ft.harga).toLocaleString('id-ID')}
                                             </div>
                                             <div>
-                                                <input type="checkbox" value={ft.id} onClick={(e) => handleLayanan('foto', ft.id, ft.harga, idlap)} class="checkbox checkbox-bg checkbox-sm" />
+                                                <input name='foto' type="checkbox" value={ft.id} onClick={(e) => handleLayanan('foto', ft.id, ft.harga, idlap)} class="checkbox checkbox-bg checkbox-sm" />
                                             </div>
                                         </div>
                                     ))}
@@ -282,7 +319,7 @@ export default function Layanan({ tgl }) {
                                                 {bl.bola} - {Number(bl.harga).toLocaleString('id-ID')}
                                             </div>
                                             <div>
-                                                <input type="checkbox" class="checkbox checkbox-bg checkbox-sm" onClick={(e) => handleLayanan('bola', bl.id, bl.harga, idlap)} />
+                                                <input type="checkbox" name='bola' class="checkbox checkbox-bg checkbox-sm" onClick={(e) => handleLayanan('bola', bl.id, bl.harga, idlap)} />
                                             </div>
                                         </div>
                                     ))}
@@ -304,7 +341,7 @@ export default function Layanan({ tgl }) {
                                                 {rm.rompi} - {Number(rm.harga).toLocaleString('id-ID')}
                                             </div>
                                             <div>
-                                                <input type="checkbox" class="checkbox checkbox-bg checkbox-sm" onClick={(e) => handleLayanan('rompi', rm.id, rm.harga, idlap)} />
+                                                <input type="checkbox" name='rompi' class="checkbox checkbox-bg checkbox-sm" onClick={(e) => handleLayanan('rompi', rm.id, rm.harga, idlap)} />
                                             </div>
                                         </div>
                                     ))}
@@ -329,7 +366,7 @@ export default function Layanan({ tgl }) {
                                                 {ws.nama} - {Number(ws.harga).toLocaleString('id-ID')}
                                             </div>
                                             <div>
-                                                <input type="checkbox" class="checkbox checkbox-bg checkbox-sm" onClick={(e) => handleLayanan('wasit', wasit.id, wasit.harga, idlap)} />
+                                                <input type="checkbox" name='wasit' class="checkbox checkbox-bg checkbox-sm" onClick={(e) => handleLayanan('wasit', ws.id, ws.harga, idlap)} />
                                             </div>
                                         </div>
                                     ))}
