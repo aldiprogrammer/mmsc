@@ -2,78 +2,70 @@ import { Link } from '@inertiajs/react';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
-export default function Jammain({ lapangan, lainya, jambooking }) {
+export default function Jammain({ lapangan, lainya, jambooking, tgl }) {
 
     const banners = [lapangan.gambar2, lapangan.gambar2];
     const [current, setCurrent] = useState(0);
-    const [selected, setSelected] = useState([]);
-    const [services, setServices] = useState({});
     const [jam, setJam] = useState([]);
-    const [tanggal, setTanggal] = useState();
-    const [totalHarga, setTotalHarga] = useState(0)
+    const [tanggal, setTanggal] = useState(tgl);
+    const [datastorage, setDatastorage] = useState([]);
+    const [idlap, setIdlap] = useState([]);
+    const [totalharga, setTotalharga] = useState(0)
 
-    // JAM SLOT
-    const jamSlots = Array.from({ length: 18 }, (_, i) => {
-        const start = i + 6;
-        const end = start + 1;
-
-        const format = (val) => val.toString().padStart(2, "0");
-
-        return {
-            label: `${format(start)}:00 - ${format(end)}:00`,
-            value: `${format(start)}-${format(end)}`
-        };
-    });
 
 
     const toggle = (value, harga) => {
-        setSelected((prev) => {
-            let updated;
 
-            if (prev.includes(value)) {
-                setTotalHarga((prevTotal) => prevTotal - Number(harga));
-                updated = prev.filter((item) => item !== value);
+
+        setIdlap(prev => {
+            let update;
+            const ceklap = prev.find(item => item == value);
+            if (ceklap) {
+                update = prev.filter(item => item !== value);
             } else {
-                setTotalHarga((prevTotal) => prevTotal + Number(harga));
-                updated = [...prev, value];
+
+                update = [...prev, value];
             }
-            console.log(updated); // ✅ Data terbaru
-            return updated;
-        });
-    };
+
+            localStorage.setItem('idlap', JSON.stringify(update))
+
+            return update;
+        })
 
 
+        setDatastorage(prev => {
+            let update;
+            const cekid = prev.find(item => item.id == value);
+            if (cekid) {
+                update = prev.filter(item => item.id !== value);
+            } else {
+                update = [...prev, {
+                    id: value, // atau 24353 dari API
+                    foto: "",
+                    wasit: "",
+                    bola: "",
+                    rompi: '',
+                    hargalap: harga,
+                    hargafoto: '',
+                    hargawasit: '',
+                    hargabola: '',
+                    hargarompi: '',
+                    tanggal: tanggal,
+                }];
 
 
-    // MODAL STATE
-    const [openModal, setOpenModal] = useState(false);
-    const [activeService, setActiveService] = useState(null);
-    const [tempHour, setTempHour] = useState(1);
+            }
 
-    // BUKA MODAL (SAFE)
-    const openServiceModal = (service) => {
-        setActiveService(service);
-        setTempHour(services[service] || 1); // kalau sudah ada value, pakai itu
-        setOpenModal(true);
-    };
+            localStorage.setItem('selectJam', JSON.stringify(update));
 
-    // SIMPAN SERVICE
-    const saveService = () => {
-        setServices((prev) => ({
-            ...prev,
-            [activeService]: tempHour
-        }));
 
-        setOpenModal(false);
-        setActiveService(null);
-        setTempHour(1);
-    };
-
-    // ❌ FIX BATAL (INI YANG PENTING)
-    const cancelModal = () => {
-        setOpenModal(false);
-        setActiveService(null);
-        setTempHour(1);
+            const data = JSON.parse(localStorage.getItem("selectJam")) || [];
+            const total = data.reduce((sum, item) => {
+                return sum + Number(item.hargalap || 0);
+            }, 0);
+            setTotalharga(total);
+            return update;
+        })
     };
 
 
@@ -89,70 +81,28 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
         }
     }
 
-    const getFoto = async () => {
-        try {
-            const response = await axios.get('/fotograper');
-            console.log(response.data);
-        } catch (error) {
 
-        }
-    }
-
-    const getRompi = async () => {
-        try {
-            const response = await axios.get('/rompi');
-            console.log(response.data);
-        } catch (error) {
-
-        }
-    }
-
-    const getBola = async () => {
-        try {
-            const response = await axios.get('/bola');
-            console.log(response.data);
-        } catch (error) {
-
-        }
-    }
-
-    const getWasit = async () => {
-        try {
-            const response = await axios.get('/wasit');
-            console.log(response.data);
-        } catch (error) {
-
-        }
-    }
-
-    // AUTO SLIDER
     useEffect(() => {
-        getBola();
-        getRompi();
-        getWasit();
-        getFoto();
-        const savedSelected = JSON.parse(localStorage.getItem("selectedJam")) || [];
-        const savedTotal = JSON.parse(localStorage.getItem("totalHarga")) || 0;
-        const savedServices = JSON.parse(localStorage.getItem("services")) || {};
 
-        setSelected(savedSelected);
-        setTotalHarga(savedTotal);
-        setServices(savedServices);
+        const data = JSON.parse(localStorage.getItem("selectJam")) || [];
+        setDatastorage(data);
+
+        const total = data.reduce((sum, item) => {
+            return sum + Number(item.hargalap || 0);
+        }, 0);
+
+        setTotalharga(total);
 
         setJam(jambooking)
         const interval = setInterval(() => {
             setCurrent((prev) => (prev + 1) % banners.length);
         }, 3000);
-
         return () => clearInterval(interval);
+
     }, []);
 
-    // Simpan otomatis setiap selected / total / layanan berubah
-    useEffect(() => {
-        localStorage.setItem("selectedJam", JSON.stringify(selected));
-        localStorage.setItem("totalHarga", JSON.stringify(totalHarga));
-        localStorage.setItem("services", JSON.stringify(services));
-    }, [selected, totalHarga, services]);
+
+
 
     return (
         <div className="bg-gray-200 md:flex md:items-center md:justify-center md:min-h-screen">
@@ -193,7 +143,7 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
                         <label className="text-gray-500 font-semibold block mb-2">
                             Pilih Tanggal Booking
                         </label>
-                        <input type="date" className="input input-bordered w-full" onChange={(e) => handleTanggal(e.target.value)} />
+                        <input type="date" value={tanggal} className="input input-bordered w-full" onChange={(e) => handleTanggal(e.target.value)} />
                     </div>
 
                     {/* LAYANAN */}
@@ -201,42 +151,12 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
                         <label className="text-gray-500 font-semibold block mb-2">
                             Layanan Tambahan
                         </label>
-
-                        <div className="grid grid-cols-3 gap-3">
-                            {[
-                                { label: "Fotografer", value: "Fotografer", icon: "fa-camera" },
-                                { label: "Sewa Rompi", value: "Rompi", icon: "fa-shirt" },
-                                { label: "Sewa Bola", value: "Bola", icon: "fa-futbol" },
-                            ].map((item, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => openServiceModal(item.value)}
-                                    className={`p-4 rounded-2xl border text-center transition
-                                    ${services[item.value]
-                                            ? "bg-blue-900 text-white border-blue-900"
-                                            : "bg-white text-gray-700 border-gray-200"
-                                        }`}
-                                >
-                                    <i className={`fas ${item.icon} text-lg`}></i>
-
-                                    <div className="text-xs font-semibold mt-1">
-                                        {item.label}
-                                    </div>
-
-                                    {services[item.value] && (
-                                        <div className="text-[10px] mt-1">
-                                            {services[item.value]} jam
-                                        </div>
-                                    )}
-                                </button>
-                            ))}
-                        </div>
                     </div>
 
                     {/* JAM SLOT */}
                     <div className="grid grid-cols-3 gap-1">
                         {jam.map((jam, i) => {
-                            const active = selected.includes(jam.id);
+                            const active = datastorage.some(item => item.id === jam.id && item.tanggal == tanggal)
 
                             return (
                                 <button
@@ -253,6 +173,7 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
                                         Rp {Number(jam.harga).toLocaleString('id-ID')}
                                         {/* {toLocalteString(jam.harga)} */}
                                     </div>
+
                                 </button>
                             );
                         })}
@@ -264,16 +185,16 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
                     <div className="w-full md:max-w-[375px] bg-white border-t p-4 shadow-lg">
                         <div className='flex justify-between mb-3'>
                             <div className="text-sm text-gray-500 mb-2">
-                                {selected.length} jam • {Object.keys(services).length} layanan
+                                Total Harga
                             </div>
 
-                            <div className='font-bold text-lg text-blue-900'>Rp {totalHarga.toLocaleString('id-ID')}</div>
+                            <div className='font-bold text-lg text-blue-900'>Rp {totalharga.toLocaleString('id-ID')}</div>
                         </div>
-                        <Link href={'/pembayaran/' + lapangan.id}>
+                        <Link href={'/pembayaran/' + lapangan.id + '/' + tanggal}>
                             <button
-                                disabled={selected.length === 0}
+                                disabled={datastorage.length === 0}
                                 className={`w-full py-4 rounded-2xl font-bold
-                            ${selected.length > 0
+                            ${datastorage.length > 0
                                         ? "bg-blue-900 text-white"
                                         : "bg-gray-300 text-gray-500"
                                     }`}
@@ -286,62 +207,6 @@ export default function Jammain({ lapangan, lainya, jambooking }) {
                 </div>
 
                 <div className="h-24"></div>
-
-                {/* MODAL */}
-                {openModal && (
-                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-
-                        <div className="bg-white w-[90%] max-w-sm rounded-2xl p-5">
-
-                            <h2 className="text-lg font-bold mb-2">
-                                Atur Jam Layanan
-                            </h2>
-
-                            <p className="text-sm text-gray-500 mb-4">
-                                Layanan: <b>{activeService}</b>
-                            </p>
-
-                            <select
-                                value={tempHour}
-                                onChange={(e) => setTempHour(Number(e.target.value))}
-                                className="w-full border p-3 rounded-lg"
-                            >
-                                {Array.from(
-                                    { length: selected.length || 1 },
-                                    (_, i) => i + 1
-                                ).map((h) => (
-                                    <option key={h} value={h}>
-                                        {h} Jam
-                                    </option>
-                                ))}
-                            </select>
-
-                            <p className="text-[10px] text-gray-400 mt-2">
-                                Maksimal {selected.length || 1} jam sesuai booking
-                            </p>
-
-                            <div className="flex gap-2 mt-5">
-
-                                <button
-                                    onClick={cancelModal}
-                                    className="w-full bg-gray-200 py-2 rounded-lg"
-                                >
-                                    Batal
-                                </button>
-
-                                <button
-                                    onClick={saveService}
-                                    className="w-full bg-blue-900 text-white py-2 rounded-lg"
-                                >
-                                    Simpan
-                                </button>
-
-                            </div>
-
-                        </div>
-                    </div>
-                )}
-
             </div>
         </div>
     );

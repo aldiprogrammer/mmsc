@@ -4,6 +4,7 @@ use App\Http\Controllers\admin\HomeController;
 use App\Http\Controllers\app\BookingController;
 use App\Http\Controllers\app\DataBookingController;
 use App\Http\Controllers\app\JammainController;
+use App\Http\Controllers\app\LayananController;
 use App\Http\Controllers\app\PembayaranController;
 use App\Http\Controllers\app\SuksesController;
 use App\Http\Controllers\ProfileController;
@@ -38,11 +39,13 @@ Route::get('/jammain/{id}', [JammainController::class, 'index'])->name('Jammain'
 Route::get('/getjammain', [JammainController::class, 'getjammain'])->name('getjammain');
 Route::get('/jambooking/{idlap}/{tanggal}', [JammainController::class, 'jambooking'])->name('jambooking');
 
-Route::get('/pembayaran/{idlap}', [PembayaranController::class, 'index'])->name('pembayaran');
+Route::get('/pembayaran/{idlap}/{tgl}', [PembayaranController::class, 'index'])->name('pembayaran');
 Route::post('/pembayaran', [PembayaranController::class, 'store'])->name('store.pembayaran');
 Route::get('/sukses', [SuksesController::class, 'index'])->name('sukses');
 Route::get('/databooking', [DataBookingController::class, 'index'])->name('databooking');
 Route::get('/databooking/{tgl}', [DataBookingController::class, 'caritanggal'])->name('caritanggaldatabooking');
+Route::get('/layanan/{tgl}', [LayananController::class, 'index'])->name('layanan');
+Route::get('/jambookinglayanan/{ids}', [LayananController::class, 'jambooking'])->name('jambookinglayanan');
 
 
 

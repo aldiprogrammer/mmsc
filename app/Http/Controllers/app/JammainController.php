@@ -27,8 +27,9 @@ class JammainController extends Controller
         }
         $lapangan = Lapangan::where('id', $id)->first();
         $lainya = Lapangan::where('id', '!=', $id)->get();
+        $tgl = date('Y-m-d');
         $jambooking = Jammbooking::where('lapangan', $id)->where('status', 1)->where('hari', $datahari)->get();
-        return Inertia::render('App/Jammain', compact('lapangan', 'lainya', 'jambooking'));
+        return Inertia::render('App/Jammain', compact('lapangan', 'lainya', 'jambooking', 'tgl'));
     }
 
     function jambooking($idlap, $tanggal)

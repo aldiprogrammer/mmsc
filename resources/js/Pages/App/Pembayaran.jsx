@@ -1,8 +1,8 @@
-import { router, useForm } from '@inertiajs/react'
+import { Link, router, useForm } from '@inertiajs/react'
 import axios from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
 
-export default function Pembayaran({ idlap }) {
+export default function Pembayaran({ idlap, tgl }) {
     const [scrolled, setScrolled] = useState(false)
     const scrollRef = useRef(null)
     const [preview, setPreview] = useState(null)
@@ -115,6 +115,8 @@ export default function Pembayaran({ idlap }) {
 
                     </div>
 
+
+
                     {/* FORM */}
                     <div className="p-4">
 
@@ -137,7 +139,57 @@ export default function Pembayaran({ idlap }) {
                             </div>
 
                             <div class="border-t border-dashed border-gray-400 my-5"></div>
+                            <div className='bg-gray-200 rounded-lg mb-4'>
+                                <Link href={'/layanan/' + tgl}>
+                                    <div className='p-4 text-sm flex justify-between'>
+                                        <div className='font-semibold'>
+                                            Tambah Layanan
+                                        </div>
+
+                                        <div>
+                                            <i className='fas fa-list'></i>
+                                        </div>
+
+                                    </div>
+
+                                    <div className='flex justify-between px-4 mb-5 text-xs'>
+                                        <div className='mb-4 text-center'>
+                                            <div><i className='fas fa-camera'></i></div>
+                                            Fotograper
+                                        </div>
+
+                                        <div className='mb-4 text-center'>
+                                            <div><i className='fas fa-futbol'></i></div>
+                                            Bola
+                                        </div>
+
+                                        <div className='mb-4 text-center'>
+                                            <div><i className='fas fa-shirt'></i></div>
+                                            Rompi
+                                        </div>
+
+                                        <div className='mb-4 text-center'>
+                                            <div><i className='fas fa-user'></i></div>
+                                            Wasit
+                                        </div>
+                                    </div>
+                                </Link>
+
+                            </div>
                             <form onSubmit={handleSubmit} className="space-y-4">
+
+                                <div>
+                                    <label className="block text-sm font-semibold mb-2">
+                                        Tanggal Main
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="nama_team"
+                                        value={tgl}
+                                        className="w-full border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        required
+                                    />
+                                </div>
 
                                 {/* Nama Team */}
                                 <div>
@@ -146,7 +198,7 @@ export default function Pembayaran({ idlap }) {
                                     </label>
                                     <input
                                         type="text"
-                                        name="nama_team"
+                                        name="tgl"
                                         value={data.nama_team}
                                         onChange={handleChange}
                                         placeholder="Masukan nama team"

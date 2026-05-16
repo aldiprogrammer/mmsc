@@ -12,10 +12,10 @@ use Inertia\Inertia;
 
 class PembayaranController extends Controller
 {
-    function index($idlap)
+    function index($idlap, $tgl)
     {
 
-        return Inertia::render('App/Pembayaran', compact('idlap'));
+        return Inertia::render('App/Pembayaran', compact('idlap', 'tgl'));
     }
 
     function store(Request $request)
