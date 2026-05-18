@@ -22,34 +22,19 @@ class PembayaranController extends Controller
     {
         $idlap = $request->lapangan;
         $lap = Lapangan::where('id', $idlap)->first();
-        $jammain = $request->jammain;
 
-
-
-        $jamIds = $jammain;
-        if (is_string($jamIds)) {
-            $decoded = json_decode($jamIds, true);
-
-            if (json_last_error() === JSON_ERROR_NONE) {
-                $jamIds = $decoded;
-            } else {
-                $jamIds = explode(',', trim($jamIds, '[]'));
-            }
+        $selectJam = $request->jammain;
+        if (is_string($selectJam)) {
+            $selectJam = json_decode($selectJam, true) ?? [];
         }
-        $jamIds = array_map('intval', array_filter($jamIds));
-        $jammain = Jammbooking::whereIn('id', $jamIds)->get();
+
+        $ids = array_column($selectJam, 'id');
+        $jambookingList = Jammbooking::whereIn('id', $ids)->get();
 
         $kodebook2 = 'Kodemain-' . rand(0, 10000000);
-        foreach ($jammain as $jambooking) {
+        foreach ($jambookingList as $jambooking) {
 
-            // $request->validate([
-            //     'wasit' => 'nullable',
-            //     'bola' => 'nullable',
-            //     'rompi' => 'nullable',
-            //     'poto' => 'nullable',
-            //     'status_poto_duajam' => 'nullable',
-            //     'video' => 'nullable',
-            // ]);
+            $service = collect($selectJam)->firstWhere('id', $jambooking->id);
 
             $kodebooking = 'Kodemain-' . rand(0, 10000000);
             $bb = new Booking();
@@ -59,7 +44,7 @@ class PembayaranController extends Controller
             $bb->jam_booking = $jambooking->jam_mulai . "-" . $jambooking->jam_berakhir;
             $bb->jam_mulai = $jambooking->jam_mulai;
             $bb->jam_selesai = $jambooking->jam_berakhir;
-            $bb->tgl = date('Y-m-d');
+            $bb->tgl = $request->tanggal;
             $bb->sistem_pembayaran =  $request->sistem_pembayaran;
             $bb->id_lapangan = $idlap;
             $bb->lapangan = $lap->lapangan;
@@ -97,9 +82,20 @@ class PembayaranController extends Controller
             $pp->status = '201';
             $pp->wa =  $request->whatsapp;
             $pp->pembayaran = $jambooking->harga;
+
+            if ($service) {
+                $pp->wasit = $service['wasit'] ?? null;
+                $pp->bola = $service['bola'] ?? null;
+                $pp->rompi = $service['rompi'] ?? null;
+                $pp->poto = $service['foto'] ?? null;
+            }
+
             $pp->save();
         }
 
-        return redirect()->back()->with('success', 'Data booking berhasil');
+        return redirect()->route('sukses')->with([
+            'success' => 'Data booking berhasil',
+            'kode_book2' => $kodebook2,
+        ]);
     }
 }

@@ -1,9 +1,10 @@
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
 export default function Jammain({ lapangan, lainya, jambooking, tgl }) {
 
+    const allLapangan = [lapangan, ...lainya];
     const banners = [lapangan.gambar2, lapangan.gambar2];
     const [current, setCurrent] = useState(0);
     const [jam, setJam] = useState([]);
@@ -12,6 +13,10 @@ export default function Jammain({ lapangan, lainya, jambooking, tgl }) {
     const [idlap, setIdlap] = useState([]);
     const [totalharga, setTotalharga] = useState(0)
 
+    const gantiLapangan = (id) => {
+        if (id == lapangan.id) return
+        router.visit('/jammain/' + id)
+    }
 
 
     const toggle = (value, harga) => {
@@ -40,7 +45,7 @@ export default function Jammain({ lapangan, lainya, jambooking, tgl }) {
                 update = prev.filter(item => item.id !== value);
             } else {
                 update = [...prev, {
-                    id: value, // atau 24353 dari API
+                    id: value,
                     foto: "",
                     wasit: "",
                     bola: "",
@@ -73,9 +78,7 @@ export default function Jammain({ lapangan, lainya, jambooking, tgl }) {
         setTanggal(e)
         try {
             const response = await axios.get('/jambooking/' + lapangan.id + '/' + e);
-            // console.log(response);
             setJam(response.data)
-
         } catch (error) {
 
         }
@@ -134,44 +137,80 @@ export default function Jammain({ lapangan, lainya, jambooking, tgl }) {
                 <div className="px-4 pb-28 mt-4">
 
                     {/* WARNING */}
-                    <div className="mb-4 bg-red-500 text-white p-4 rounded-xl text-sm">
-                        ⚠ Booking tidak bisa dibatalkan setelah diproses
+                    <div className="mb-4 bg-gradient-to-r from-red-500 to-red-600 text-white p-3 rounded-xl text-xs flex items-center gap-2 shadow-sm">
+                        <i className='fas fa-exclamation-circle'></i>
+                        Booking tidak bisa dibatalkan setelah diproses
+                    </div>
+
+                    {/* PILIH LAPANGAN */}
+                    <div className='mb-4'>
+                        <label className="text-gray-500 font-semibold text-xs block mb-2">
+                            Pilih Lapangan
+                        </label>
+                        <div className='flex gap-2 overflow-x-auto pb-1 scrollbar-hide'>
+                            {allLapangan.map((item) => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => gantiLapangan(item.id)}
+                                    className={`shrink-0 px-4 py-2.5 rounded-xl text-xs font-bold transition border
+                                    ${item.id == lapangan.id
+                                            ? 'bg-blue-950 text-white border-blue-950 shadow-sm'
+                                            : 'bg-white text-gray-600 border-gray-200 hover:border-blue-300'
+                                        }`}
+                                >
+                                    <i className={`fas fa-futbol mr-1.5 ${item.id == lapangan.id ? 'text-white' : 'text-gray-400'}`}></i>
+                                    {item.lapangan}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     {/* TANGGAL */}
-                    <div className="mb-4">
-                        <label className="text-gray-500 font-semibold block mb-2">
-                            Pilih Tanggal Booking
-                        </label>
-                        <input type="date" value={tanggal} className="input input-bordered w-full" onChange={(e) => handleTanggal(e.target.value)} />
-                    </div>
-
-                    {/* LAYANAN */}
-                    <div className="mb-5">
-                        <label className="text-gray-500 font-semibold block mb-2">
-                            Layanan Tambahan
-                        </label>
+                    <div className='mb-5 bg-gray-50 rounded-xl p-4 border border-gray-200'>
+                        <div className='flex items-center gap-3'>
+                            <div className='w-10 h-10 rounded-full bg-blue-950 flex items-center justify-center shrink-0'>
+                                <i className='fas fa-calendar-alt text-white text-sm'></i>
+                            </div>
+                            <div className='flex-1'>
+                                <label className='text-xs font-semibold text-gray-600 mb-1 block'>Pilih Tanggal Booking</label>
+                                <input type="date" value={tanggal} onChange={(e) => handleTanggal(e.target.value)} className='w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none focus:outline-none p-0 [color-scheme:light]' style={{ padding: 0, margin: 0 }} />
+                            </div>
+                        </div>
                     </div>
 
                     {/* JAM SLOT */}
-                    <div className="grid grid-cols-3 gap-1">
+                    <div className='text-xs font-semibold text-gray-500 mb-2'>Pilih Jam Main</div>
+                    <div className="grid grid-cols-3 gap-1.5">
                         {jam.map((jam, i) => {
                             const active = datastorage.some(item => item.id === jam.id && item.tanggal == tanggal)
 
                             return (
                                 <button
                                     key={i}
-                                    onClick={() => toggle(jam.id, jam.harga)}
-                                    className={`p-4 text-xs rounded-2xl border
-                                    ${active
-                                            ? "bg-blue-900 text-white border-blue-900"
-                                            : "bg-white text-blue-950 border-gray-200"
+                                    disabled={jam.booked}
+                                    onClick={() => {
+                                        if (jam.booked) {
+                                            Swal.fire({
+                                                icon: 'warning',
+                                                title: 'Jam Tidak Tersedia',
+                                                text: 'Jam ini sudah di booking, silahkan pilih jam lain',
+                                                confirmButtonColor: '#1e3a5f',
+                                            })
+                                            return
+                                        }
+                                        toggle(jam.id, jam.harga)
+                                    }}
+                                    className={`p-4 text-xs rounded-2xl border transition
+                                    ${jam.booked
+                                            ? 'bg-gray-100 text-gray-300 border-gray-200 cursor-not-allowed line-through'
+                                            : active
+                                                ? "bg-blue-900 text-white border-blue-900"
+                                                : "bg-white text-blue-950 border-gray-200 hover:border-blue-300"
                                         }`}
                                 >
                                     {jam.jam_mulai} - {jam.jam_berakhir}
-                                    <div className='mt-2 text-gray-500 font-bold'>
-                                        Rp {Number(jam.harga).toLocaleString('id-ID')}
-                                        {/* {toLocalteString(jam.harga)} */}
+                                    <div className={`mt-2 font-bold ${jam.booked ? 'text-gray-300' : active ? 'text-white' : 'text-gray-500'}`}>
+                                        {jam.booked ? 'Booked' : `Rp ${Number(jam.harga).toLocaleString('id-ID')}`}
                                     </div>
 
                                 </button>

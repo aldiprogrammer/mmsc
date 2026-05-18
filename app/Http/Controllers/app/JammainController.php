@@ -4,6 +4,7 @@ namespace App\Http\Controllers\app;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bola;
+use App\Models\Booking;
 use App\Models\Foto;
 use App\Models\Jammbooking;
 use App\Models\Lapangan;
@@ -29,6 +30,11 @@ class JammainController extends Controller
         $lainya = Lapangan::where('id', '!=', $id)->get();
         $tgl = date('Y-m-d');
         $jambooking = Jammbooking::where('lapangan', $id)->where('status', 1)->where('hari', $datahari)->get();
+        $bookedJam = Booking::where('id_lapangan', $id)->where('tgl', $tanggal)->pluck('jam_mulai')->toArray();
+        $jambooking = $jambooking->map(function ($item) use ($bookedJam) {
+            $item->booked = in_array($item->jam_mulai, $bookedJam);
+            return $item;
+        });
         return Inertia::render('App/Jammain', compact('lapangan', 'lainya', 'jambooking', 'tgl'));
     }
 
@@ -42,6 +48,11 @@ class JammainController extends Controller
             $datahari = 'senin-jumat';
         }
         $jambooking = Jammbooking::where('lapangan', $idlap)->where('status', 1)->where('hari', $datahari)->get();
+        $bookedJam = Booking::where('id_lapangan', $idlap)->where('tgl', $tanggal)->pluck('jam_mulai')->toArray();
+        $jambooking = $jambooking->map(function ($item) use ($bookedJam) {
+            $item->booked = in_array($item->jam_mulai, $bookedJam);
+            return $item;
+        });
         return response()->json($jambooking);
     }
 

@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react'
 import React, { useEffect, useState } from 'react'
 
-export default function Sukses() {
+export default function Sukses({ kode, bookings }) {
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -11,8 +11,6 @@ export default function Sukses() {
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
-
-    const bookingId = 'MMSC-' + Date.now().toString().slice(-6)
 
     return (
         <div className="bg-gray-200 md:flex md:items-center md:justify-center md:min-h-screen">
@@ -52,18 +50,24 @@ export default function Sukses() {
                     {/* Booking ID card */}
                     <div className="w-full bg-gradient-to-r from-blue-950 to-blue-800 rounded-2xl p-5 mb-6 text-white text-left">
                         <div className="text-xs text-blue-200 mb-1">Kode Booking</div>
-                        <div className="text-lg font-bold tracking-wider mb-4">{bookingId}</div>
-                        <div className="border-t border-blue-400/30 pt-3 grid grid-cols-2 gap-3 text-sm">
+                        <div className="text-lg font-bold tracking-wider mb-4">{kode || 'Memuat...'}</div>
+                        <div className="border-t border-blue-400/30 pt-3 grid grid-cols-2 gap-1 text-sm">
                             <div>
                                 <div className="text-xs text-blue-200">Status</div>
-                                <div className="font-semibold flex items-center gap-1">
+                                <div className="font-semibold flex items-center gap-1 text-xs">
                                     <span className="w-2 h-2 bg-yellow-400 rounded-full inline-block"></span>
                                     Menunggu
                                 </div>
                             </div>
                             <div>
-                                <div className="text-xs text-blue-200">Estimasi</div>
-                                <div className="font-semibold">1x24 Jam</div>
+                                <div className="text-xs text-blue-200">Jam Main</div>
+                                <div className="font-bold text-xs">
+                                    {bookings.length > 0
+                                        ? bookings.map((b, i) => (
+                                            <span key={i}>{b.jam_booking}{i < bookings.length - 1 ? ', ' : ''}</span>
+                                        ))
+                                        : 'Memuat...'}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -73,8 +77,7 @@ export default function Sukses() {
                         <div className="flex gap-3">
                             <i className="fas fa-info-circle text-yellow-600 mt-0.5"></i>
                             <div className="text-xs text-yellow-700 leading-relaxed">
-                                Simpan kode booking anda untuk melakukan pengecekan status.
-                                Admin akan menghubungi anda melalui WhatsApp yang didaftarkan.
+                                Jam yang sudah anda pilih tidak dapat di ubah dam uang yang sudah di di transfer tidak adapat di kembalikan
                             </div>
                         </div>
                     </div>
