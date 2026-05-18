@@ -24,6 +24,8 @@ class PembayaranController extends Controller
         $lap = Lapangan::where('id', $idlap)->first();
         $jammain = $request->jammain;
 
+
+
         $jamIds = $jammain;
         if (is_string($jamIds)) {
             $decoded = json_decode($jamIds, true);

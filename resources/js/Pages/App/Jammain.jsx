@@ -183,6 +183,18 @@ export default function Jammain({ lapangan, lainya, jambooking, tgl }) {
                 {/* FOOTER */}
                 <div className="fixed bottom-0 left-0 w-full md:flex md:justify-center">
                     <div className="w-full md:max-w-[375px] bg-white border-t p-4 shadow-lg">
+                        {datastorage.length > 0 && (
+                            <div className='mb-3 text-xs text-gray-500'>
+                                <div className='font-semibold mb-1'>Jam dipilih:</div>
+                                <div className='flex flex-wrap gap-1'>
+                                    {jam.filter(j => datastorage.some(d => d.id === j.id && d.tanggal == tanggal)).map((j, i) => (
+                                        <span key={i} className='bg-blue-100 text-blue-900 px-2 py-0.5 rounded-full font-medium'>
+                                            {j.jam_mulai}-{j.jam_berakhir}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                         <div className='flex justify-between mb-3'>
                             <div className="text-sm text-gray-500 mb-2">
                                 Total Harga

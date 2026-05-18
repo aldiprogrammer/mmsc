@@ -5,7 +5,6 @@ export default function Layanan({ tgl }) {
     const [scrolled, setScrolled] = useState(false);
     const scrollRef = useRef(null);
     const [jam, setJam] = useState([]);
-    const ids = localStorage.getItem('idlap');
     const [bola, setBola] = useState([]);
     const [foto, setFoto] = useState([]);
     const [rompi, setRompi] = useState([]);
@@ -16,11 +15,7 @@ export default function Layanan({ tgl }) {
     const [showwasit, setShowWasit] = useState(false);
     const [idlap, setIdlap] = useState(0);
     const [totalharga, setTotalharga] = useState(0);
-    const [datastorage, setDatastorage] = useState([]);
-    const [datafoto, setDatafoto] = useState([]);
-    const [datarompi, setDatarompi] = useState([]);
-    const [databola, setDatabola] = useState([]);
-    const [datawasit, setDatawasit] = useState([]);
+    const [selectJamData, setSelectJamData] = useState([]);
 
 
 
@@ -28,9 +23,10 @@ export default function Layanan({ tgl }) {
 
     const getJam = async () => {
         try {
+            const selectJam = JSON.parse(localStorage.getItem('selectJam') || '[]');
+            const ids = JSON.stringify(selectJam.map(item => item.id));
             const response = await axios.get('/jambookinglayanan/' + ids);
             setJam(response.data);
-            // console.log(response);
         } catch (error) {
 
         }
@@ -92,108 +88,9 @@ export default function Layanan({ tgl }) {
         }
     }
 
-    const handleLayanan = (layanan, idlayanan, harga, idjam) => {
-        const data = JSON.parse(localStorage.getItem('selectJam') || []);
-        const update = data.map(item => {
-            if (item.id == idjam) {
-
-
-                if (layanan == 'foto') {
-                    setDatafoto((prev => {
-                        if (prev.includes(idlayanan)) {
-                            return prev.filter(item => item !== idlayanan)
-                        } else {
-                            return [...prev, idlayanan]
-                        }
-                    }))
-
-                    console.log(datafoto);
-
-
-                    // kalau sudah ada → hapus
-                    if (item.foto == idlayanan) {
-                        return {
-                            ...item,
-                            foto: "",
-                            hargafoto: ""
-                        };
-                    }
-
-                    return {
-                        ...item,
-                        foto: idlayanan,
-                        hargafoto: harga,
-                    }
-
-                } else if (layanan == 'bola') {
-                    // kalau sudah ada → hapus
-                    if (item.bola == idlayanan) {
-                        return {
-                            ...item,
-                            bola: "",
-                            hargabola: ""
-                        };
-                    }
-
-                    return {
-                        ...item,
-                        bola: idlayanan,
-                        hargabola: harga,
-                    }
-                } else if (layanan == 'rompi') {
-                    // kalau sudah ada → hapus
-                    if (item.rompi == idlayanan) {
-                        return {
-                            ...item,
-                            rompi: "",
-                            hargarompi: ""
-                        };
-                    }
-
-                    return {
-                        ...item,
-                        rompi: idlayanan,
-                        hargarompi: harga,
-                    }
-
-                } else if (layanan == 'wasit') {
-                    // kalau sudah ada → hapus
-                    if (item.wasit == idlayanan) {
-                        return {
-                            ...item,
-                            wasit: "",
-                            hargawasit: ""
-                        };
-                    }
-
-                    return {
-                        ...item,
-                        wasit: idlayanan,
-                        hargawasit: harga,
-                    }
-
-                }
-            }
-
-            return item;
-        })
-        localStorage.setItem("selectJam", JSON.stringify(update));
-
-        const key = JSON.parse(localStorage.getItem("selectJam")) || [];
-        const total = key.reduce((sum, item) => {
-            return sum + Number(item.hargalap || 0) +
-                Number(item.hargafoto || 0) +
-                Number(item.hargabola || 0) +
-                Number(item.hargarompi || 0) +
-                Number(item.hargawasit || 0);
-        }, 0);
-
-        setTotalharga(total);
-
-    }
-
-    useEffect(() => {
-        const data = JSON.parse(localStorage.getItem("selectJam")) || [];
+    const syncFromStorage = () => {
+        const data = JSON.parse(localStorage.getItem("selectJam") || '[]');
+        setSelectJamData(data);
         const total = data.reduce((sum, item) => {
             return sum + Number(item.hargalap || 0) +
                 Number(item.hargafoto || 0) +
@@ -201,10 +98,56 @@ export default function Layanan({ tgl }) {
                 Number(item.hargarompi || 0) +
                 Number(item.hargawasit || 0);
         }, 0);
-
         setTotalharga(total);
+    }
 
+    const handleLayanan = (layanan, idlayanan, harga, idjam) => {
+        setSelectJamData(prev => {
+            const update = prev.map(item => {
+                if (item.id == idjam) {
 
+                    if (layanan == 'foto') {
+                        if (item.foto == idlayanan) {
+                            return { ...item, foto: "", hargafoto: "" };
+                        }
+                        return { ...item, foto: idlayanan, hargafoto: harga };
+
+                    } else if (layanan == 'bola') {
+                        if (item.bola == idlayanan) {
+                            return { ...item, bola: "", hargabola: "" };
+                        }
+                        return { ...item, bola: idlayanan, hargabola: harga };
+
+                    } else if (layanan == 'rompi') {
+                        if (item.rompi == idlayanan) {
+                            return { ...item, rompi: "", hargarompi: "" };
+                        }
+                        return { ...item, rompi: idlayanan, hargarompi: harga };
+
+                    } else if (layanan == 'wasit') {
+                        if (item.wasit == idlayanan) {
+                            return { ...item, wasit: "", hargawasit: "" };
+                        }
+                        return { ...item, wasit: idlayanan, hargawasit: harga };
+                    }
+                }
+                return item;
+            })
+            localStorage.setItem("selectJam", JSON.stringify(update));
+            const total = update.reduce((sum, item) => {
+                return sum + Number(item.hargalap || 0) +
+                    Number(item.hargafoto || 0) +
+                    Number(item.hargabola || 0) +
+                    Number(item.hargarompi || 0) +
+                    Number(item.hargawasit || 0);
+            }, 0);
+            setTotalharga(total);
+            return update;
+        })
+    }
+
+    useEffect(() => {
+        syncFromStorage();
         getJam();
         getWasit();
         getBola();
@@ -280,6 +223,7 @@ export default function Layanan({ tgl }) {
                             <div className='bg-gray-500 p-5 mt-1 rounded-lg '>
                                 <div className='flex justify-between text-gray-100' onClick={() => handleshow('foto', item.id)}>
                                     <div className='font-bold'>
+                                        {selectJamData.find(j => j.id == item.id)?.foto ? <i className='fas fa-check-circle text-green-400 mr-1'></i> : ''}
                                         Fotograper
                                     </div>
                                     <div>
@@ -295,7 +239,7 @@ export default function Layanan({ tgl }) {
                                                 {ft.nama} - {Number(ft.harga).toLocaleString('id-ID')}
                                             </div>
                                             <div>
-                                                <input name='foto' type="checkbox" value={ft.id} onClick={(e) => handleLayanan('foto', ft.id, ft.harga, idlap)} class="checkbox checkbox-bg checkbox-sm" />
+                                                <input name='foto' type="checkbox" value={ft.id} checked={selectJamData.find(j => j.id == item.id)?.foto == ft.id} onClick={(e) => { e.stopPropagation(); handleLayanan('foto', ft.id, ft.harga, item.id) }} class="checkbox checkbox-bg checkbox-sm" />
                                             </div>
                                         </div>
                                     ))}
@@ -304,6 +248,7 @@ export default function Layanan({ tgl }) {
 
                                 <div className='flex justify-between mt-3 text-gray-100' onClick={() => handleshow('bola', item.id)}>
                                     <div className='font-bold'>
+                                        {selectJamData.find(j => j.id == item.id)?.bola ? <i className='fas fa-check-circle text-green-400 mr-1'></i> : ''}
                                         Bola
                                     </div>
                                     <div>
@@ -319,7 +264,7 @@ export default function Layanan({ tgl }) {
                                                 {bl.bola} - {Number(bl.harga).toLocaleString('id-ID')}
                                             </div>
                                             <div>
-                                                <input type="checkbox" name='bola' class="checkbox checkbox-bg checkbox-sm" onClick={(e) => handleLayanan('bola', bl.id, bl.harga, idlap)} />
+                                                <input type="checkbox" name='bola' checked={selectJamData.find(j => j.id == item.id)?.bola == bl.id} class="checkbox checkbox-bg checkbox-sm" onClick={(e) => { e.stopPropagation(); handleLayanan('bola', bl.id, bl.harga, item.id) }} />
                                             </div>
                                         </div>
                                     ))}
@@ -327,6 +272,7 @@ export default function Layanan({ tgl }) {
 
                                 <div className='flex justify-between mt-3 text-gray-100' onClick={() => handleshow('rompi', item.id)}>
                                     <div className='font-bold'>
+                                        {selectJamData.find(j => j.id == item.id)?.rompi ? <i className='fas fa-check-circle text-green-400 mr-1'></i> : ''}
                                         Rompi
                                     </div>
                                     <div>
@@ -341,7 +287,7 @@ export default function Layanan({ tgl }) {
                                                 {rm.rompi} - {Number(rm.harga).toLocaleString('id-ID')}
                                             </div>
                                             <div>
-                                                <input type="checkbox" name='rompi' class="checkbox checkbox-bg checkbox-sm" onClick={(e) => handleLayanan('rompi', rm.id, rm.harga, idlap)} />
+                                                <input type="checkbox" name='rompi' checked={selectJamData.find(j => j.id == item.id)?.rompi == rm.id} class="checkbox checkbox-bg checkbox-sm" onClick={(e) => { e.stopPropagation(); handleLayanan('rompi', rm.id, rm.harga, item.id) }} />
                                             </div>
                                         </div>
                                     ))}
@@ -352,6 +298,7 @@ export default function Layanan({ tgl }) {
 
                                 <div className='flex justify-between mt-3 text-gray-100' onClick={() => handleshow('wasit', item.id)}>
                                     <div className='font-bold'>
+                                        {selectJamData.find(j => j.id == item.id)?.wasit ? <i className='fas fa-check-circle text-green-400 mr-1'></i> : ''}
                                         Wasit
                                     </div>
                                     <div>
@@ -366,7 +313,7 @@ export default function Layanan({ tgl }) {
                                                 {ws.nama} - {Number(ws.harga).toLocaleString('id-ID')}
                                             </div>
                                             <div>
-                                                <input type="checkbox" name='wasit' class="checkbox checkbox-bg checkbox-sm" onClick={(e) => handleLayanan('wasit', ws.id, ws.harga, idlap)} />
+                                                <input type="checkbox" name='wasit' checked={selectJamData.find(j => j.id == item.id)?.wasit == ws.id} class="checkbox checkbox-bg checkbox-sm" onClick={(e) => { e.stopPropagation(); handleLayanan('wasit', ws.id, ws.harga, item.id) }} />
                                             </div>
                                         </div>
                                     ))}

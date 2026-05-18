@@ -7,7 +7,22 @@ export default function Pembayaran({ idlap, tgl }) {
     const scrollRef = useRef(null)
     const [preview, setPreview] = useState(null)
     const [listjam, Setlistjam] = useState([]);
-    const jam = localStorage.getItem('selectedJam');
+    const jam = JSON.parse(localStorage.getItem("selectJam"));
+    const [selectJamData, setSelectJamData] = useState([]);
+
+    const hasFoto = selectJamData.some(item => item.foto);
+    const hasBola = selectJamData.some(item => item.bola);
+    const hasRompi = selectJamData.some(item => item.rompi);
+    const hasWasit = selectJamData.some(item => item.wasit);
+    const hasAnyService = hasFoto || hasBola || hasRompi || hasWasit;
+
+    const totalFromServices = selectJamData.reduce((sum, item) => {
+        return sum + Number(item.hargalap || 0) +
+            Number(item.hargafoto || 0) +
+            Number(item.hargabola || 0) +
+            Number(item.hargarompi || 0) +
+            Number(item.hargawasit || 0);
+    }, 0);
 
     const { data, setData, post, put, delete: destroy, reset, processing
     } = useForm({
@@ -19,7 +34,7 @@ export default function Pembayaran({ idlap, tgl }) {
         lapangan: idlap,
         jammain: jam,
         bukti: null,
-        total_harga: localStorage.getItem('totalHarga'),
+        total_harga: totalFromServices,
     })
 
 
@@ -56,6 +71,8 @@ export default function Pembayaran({ idlap, tgl }) {
     }
 
     useEffect(() => {
+        const data = JSON.parse(localStorage.getItem('selectJam') || '[]');
+        setSelectJamData(data);
         handlejam();
         const handleScroll = () => {
             if (scrollRef.current) {
@@ -73,6 +90,11 @@ export default function Pembayaran({ idlap, tgl }) {
                 currentRef.removeEventListener('scroll', handleScroll)
             }
         }
+    }, [])
+
+    useEffect(() => {
+        console.log(jam);
+
     }, [])
 
     return (
@@ -134,7 +156,7 @@ export default function Pembayaran({ idlap, tgl }) {
                                 </div>
                                 <div>
                                     <div className='text-xs font-semibold text-gray-500'> Total Harga</div>
-                                    <div className='font-bold text-blue-950'>Rp {Number(localStorage.getItem('totalHarga')).toLocaleString('id-ID')}</div>
+                                    <div className='font-bold text-blue-950'>Rp {totalFromServices.toLocaleString('id-ID')}</div>
                                 </div>
                             </div>
 
@@ -152,27 +174,35 @@ export default function Pembayaran({ idlap, tgl }) {
 
                                     </div>
 
-                                    <div className='flex justify-between px-4 mb-5 text-xs'>
-                                        <div className='mb-4 text-center'>
-                                            <div><i className='fas fa-camera'></i></div>
-                                            Fotograper
+                                    {hasAnyService ? (
+                                        <div className='flex justify-between px-4 mb-5 text-xs'>
+                                            <div className='mb-4 text-center'>
+                                                <div>{hasFoto ? <><i className='fas fa-check-circle text-green-400'></i> </> : ''}<i className='fas fa-camera'></i></div>
+                                                Fotograper
+                                            </div>
+
+                                            <div className='mb-4 text-center'>
+                                                <div>{hasBola ? <><i className='fas fa-check-circle text-green-400'></i> </> : ''}<i className='fas fa-futbol'></i></div>
+                                                Bola
+                                            </div>
+
+                                            <div className='mb-4 text-center'>
+                                                <div>{hasRompi ? <><i className='fas fa-check-circle text-green-400'></i> </> : ''}<i className='fas fa-shirt'></i></div>
+                                                Rompi
+                                            </div>
+
+                                            <div className='mb-4 text-center'>
+                                                <div>{hasWasit ? <><i className='fas fa-check-circle text-green-400'></i> </> : ''}<i className='fas fa-user'></i></div>
+                                                Wasit
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className=' mb-5 text-xs text-center text-gray-400'>
+                                            <div className='mb-5'> Tambah layanan foto, rompi, bola dan wasit</div>
+                                            <br />
                                         </div>
 
-                                        <div className='mb-4 text-center'>
-                                            <div><i className='fas fa-futbol'></i></div>
-                                            Bola
-                                        </div>
-
-                                        <div className='mb-4 text-center'>
-                                            <div><i className='fas fa-shirt'></i></div>
-                                            Rompi
-                                        </div>
-
-                                        <div className='mb-4 text-center'>
-                                            <div><i className='fas fa-user'></i></div>
-                                            Wasit
-                                        </div>
-                                    </div>
+                                    )}
                                 </Link>
 
                             </div>
@@ -198,7 +228,7 @@ export default function Pembayaran({ idlap, tgl }) {
                                     </label>
                                     <input
                                         type="text"
-                                        name="tgl"
+                                        name="nama_team"
                                         value={data.nama_team}
                                         onChange={handleChange}
                                         placeholder="Masukan nama team"
