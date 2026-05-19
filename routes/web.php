@@ -5,8 +5,10 @@ use App\Http\Controllers\app\BookingController;
 use App\Http\Controllers\app\DataBookingController;
 use App\Http\Controllers\app\JammainController;
 use App\Http\Controllers\app\LayananController;
+use App\Http\Controllers\app\LoginController;
 use App\Http\Controllers\app\PembayaranController;
 use App\Http\Controllers\app\SuksesController;
+use App\Http\Controllers\app\TeamrankteamController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +34,10 @@ Route::middleware('auth')->group(function () {
 });
 
 
+Route::get('/loginuser', [LoginController::class, 'index'])->name('loginuser');
+Route::post('/loginuser', [LoginController::class, 'store'])->name('authloginuser');
+
+
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/booking', [BookingController::class, 'index'])->name('booking');
 Route::get('/booking/{id}', [BookingController::class, 'detail'])->name('detail');
@@ -48,7 +54,10 @@ Route::get('/layanan/{tgl}', [LayananController::class, 'index'])->name('layanan
 Route::get('/jambookinglayanan/{ids}', [LayananController::class, 'jambooking'])->name('jambookinglayanan');
 
 
-
+Route::get('/daftarteam', [TeamrankteamController::class, 'index'])->name('daftarteam');
+Route::post('/daftarteam/save', [TeamrankteamController::class, 'save'])->name('daftarteam.save');
+Route::post('/daftarteam/pemain', [TeamrankteamController::class, 'savePemain'])->name('daftarteam.savePemain');
+Route::delete('/daftarteam/pemain/{id}', [TeamrankteamController::class, 'deletePemain'])->name('daftarteam.deletePemain');
 
 Route::get('/bola', [JammainController::class, 'bola'])->name('bola');
 Route::get('/rompi', [JammainController::class, 'rompi'])->name('rompi');

@@ -1,7 +1,7 @@
 import { Head, Link } from '@inertiajs/react'
 import React from 'react'
 
-export default function Home() {
+export default function Home({ user }) {
     return (
         <>
             <Head title="Home" />
@@ -16,9 +16,9 @@ export default function Home() {
 
                         <div className="flex justify-between items-center">
                             <div>
-                                <p className="text-sm opacity-80">Hi Octavia,</p>
+                                <p className="text-sm opacity-80">Hi {user.nama},</p>
                                 <h1 className="text-lg font-semibold">
-                                    this is your recent usage
+                                    Welcome back
                                 </h1>
                             </div>
                             <img
@@ -61,8 +61,10 @@ export default function Home() {
                                 </div>
 
                                 <div>
-                                    <i className="text-blue-300 text-xl fas fa-futbol"></i>
-                                    <div className="text-xs text-gray-400">Rank Team</div>
+                                    <Link href='/daftarteam'>
+                                        <i className="text-blue-300 text-xl fas fa-futbol"></i>
+                                        <div className="text-xs text-gray-400">Rank Team</div>
+                                    </Link>
                                 </div>
 
                                 <div>

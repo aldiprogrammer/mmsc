@@ -10,6 +10,12 @@ class HomeController extends Controller
 {
     function index()
     {
-        return Inertia::render('App/Home');
+        $user = [
+            'nama' => session('nama'),
+            'kode_user' => session('kode_user'),
+            'id_auth' => session('id_auth'),
+            'email' => session('email'),
+        ];
+        return Inertia::render('App/Home', compact('user'));
     }
 }
